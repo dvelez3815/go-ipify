@@ -13,7 +13,7 @@ const VERSION = "1.0.0"
 const MAX_TRIES = 3
 
 // This is the ipify service base URI.  This is where all API requests go.
-var API_URI = "https://api.ipify.org"
+var API_URI_TEMPLATE = "https://api.ipify.org?format=text&ip=%s"
 
 // The user-agent string is provided so that I can (eventually) keep track of
 // what libraries to support over time.  EG: Maybe the service is used

@@ -4,11 +4,14 @@ package ipify
 
 import (
 	"errors"
-	"github.com/jpillora/backoff"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
+
+	"github.com/jpillora/backoff"
 )
 
 // GetIp queries the ipify service (http://www.ipify.org) to retrieve this
@@ -19,28 +22,30 @@ import (
 //
 // Usage:
 //
-//		package main
+//	package main
 //
-//		import (
-//			"fmt"
-//			"github.com/rdegges/go-ipify"
-//		)
+//	import (
+//		"fmt"
+//		"github.com/rdegges/go-ipify"
+//	)
 //
-//		func main() {
-//			ip, err := ipify.GetIp()
-//			if err != nil {
-//				fmt.Println("Couldn't get my IP address:", err)
-//			} else {
-//				fmt.Println("My IP address is:", ip)
-//			}
+//	func main() {
+//		ip, err := ipify.GetIp()
+//		if err != nil {
+//			fmt.Println("Couldn't get my IP address:", err)
+//		} else {
+//			fmt.Println("My IP address is:", ip)
 //		}
-func GetIp() (string, error) {
+//	}
+func GetIp(r *http.Request) (string, error) {
 	b := &backoff.Backoff{
 		Jitter: true,
 	}
 	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", API_URI, nil)
+	ip := strings.Split(r.RemoteAddr, ":")[0]
+	apiURL := fmt.Sprintf(API_URI_TEMPLATE, ip)
+	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		return "", errors.New("Received an invalid status code from ipify: 500. The service might be experiencing issues.")
 	}

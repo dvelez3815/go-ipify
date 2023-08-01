@@ -1,23 +1,32 @@
 package ipify
 
 import (
+	"net/http"
 	"testing"
 )
 
 func TestGetIp(t *testing.T) {
-	originalApiUri := API_URI
+	originalApiUri := API_URI_TEMPLATE
 
-	_, err := GetIp()
+	// Create a dummy http.Request object
+	req, err := http.NewRequest("GET", "https://example.com", nil)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
-	API_URI = "https://api.ipifyyyyyyyyyyyy.org"
+	ip, err := GetIp(req)
+	if err != nil {
+		t.Error(err)
+	} else {
+		t.Logf("Public IP address: %s", ip)
+	}
 
-	_, err = GetIp()
+	API_URI_TEMPLATE = "https://api.ipifyyyyyyyyyyyy.org?format=text&ip=%s"
+
+	ip, err = GetIp(req)
 	if err == nil {
 		t.Error("Request to https://api.ipifyyyyyyyyyyyy.org should have failed, but succeeded.")
 	}
 
-	API_URI = originalApiUri
+	API_URI_TEMPLATE = originalApiUri
 }
