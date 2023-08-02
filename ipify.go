@@ -43,7 +43,12 @@ func GetIp(r *http.Request) (string, error) {
 	}
 	client := &http.Client{}
 
-	ip := strings.Split(r.RemoteAddr, ":")[0]
+	// Retrieve the user's public IP address from the X-Forwarded-For header
+	ip := r.Header.Get("X-Forwarded-For")
+	if ip == "" {
+		ip = strings.Split(r.RemoteAddr, ":")[0]
+	}
+
 	apiURL := fmt.Sprintf(API_URI_TEMPLATE, ip)
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
